@@ -1,169 +1,104 @@
 ---
 layout: post
-title: Welcome to Not Pure Poole
-date: 2020-09-29 23:18 +0800
-last_modified_at: 2020-10-01 01:08:25 +0800
-tags: [jekyll theme, jekyll, tutorial]
-toc:  true
+title: 레디스는 왜 이렇게 핫할까?
+date: 2025-06-12 10:00 +0900
+tags: [Redis, 캐시, 성능개선]
+toc: true
 ---
-Welcome to **Not Pure Poole**! This is an example post to show the layout.
-{: .message }
 
-First, do you notice the TOC on the right side? Try to scroll down to read this post, you'll find that the TOC is always sticky in the viewport.
+### 레디스는 왜 이렇게 핫할까?
 
-Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. *Aenean eu leo quam.* Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.
+요즘 개발 관련 글이나 기술 스택을 보면 **Redis**는 빠지지 않고 등장해.  
+도대체 왜 이렇게 핫한 걸까?
 
-> Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.
+그걸 이해하려면 먼저, **레디스가 뭔지**부터 짚고 가야 해.
 
-Etiam porta **sem malesuada magna** mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.
+---
 
-## Inline HTML elements
+### Redis란?
 
-HTML defines a long list of available inline tags, a complete list of which can be found on the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/HTML/Element).
+Redis는 **인메모리 기반**의, **Key-Value 형식으로 구성된 데이터베이스**야.  
+말 그대로 RAM(메모리)에 데이터를 저장하고, 키를 통해 값을 빠르게 꺼내 쓰는 구조지.
 
-- **To bold text**, use `<strong>`.
-- *To italicize text*, use `<em>`.
-- <mark>To highlight</mark>, use `<mark>`.
-- Abbreviations, like <abbr title="HyperText Markup Langage">HTML</abbr> should use `<abbr>`, with an optional `title` attribute for the full phrase.
-- Citations, like <cite>&mdash; Mark Otto</cite>, should use `<cite>`.
-- <del>Deleted</del> text should use `<del>` and <ins>inserted</ins> text should use `<ins>`.
-- Superscript <sup>text</sup> uses `<sup>` and subscript <sub>text</sub> uses `<sub>`.
+---
 
-Most of these elements are styled by browsers with few modifications on our part.
+### 📦 비유하자면...
 
-## Footnotes
+내가 책상에서 공부를 하고 있다고 해보자.
 
-Footnotes are supported as part of the Markdown syntax. Here's one in action. Clicking this number[^fn-sample_footnote] will lead you to a footnote. The syntax looks like:
+- 📂 RDBMS는 집 안의 **창고** 같아. 필요한 걸 꺼내려면 자리에서 일어나서 가야 해.
+- 🧠 Redis는 책상 옆 **서랍** 같아. 자주 쓰는 건 거기 넣어두고 바로 꺼내 쓰면 되지.
 
-{% highlight text %}
-Clicking this number[^fn-sample_footnote]
-{% endhighlight %}
+같은 “저장소”지만, **접근 속도와 사용 목적이 완전히 다르다**는 거야.
 
-Each footnote needs the `^fn-` prefix and a unique ID to be referenced for the footnoted content. The syntax for that list looks something like this:
+---
 
-{% highlight text %}
-[^fn-sample_footnote]: Handy! Now click the return link to go back.
-{% endhighlight %}
+### 레디스가 빠른 이유
 
-You can place the footnoted content wherever you like. Markdown parsers should properly place it at the bottom of the post.
+RDBMS는 보통 디스크에 데이터를 저장하지만,  
+Redis는 **메모리에 저장**하기 때문에  
+읽고 쓰는 속도가 훨씬 빨라.
 
-## Heading
+하지만 단점도 있어.
 
-Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+- 휘발성: 서버를 껐다 켜면 데이터가 날아갈 수 있음
+- 용량 제한: 메모리는 디스크보다 저장할 수 있는 양이 훨씬 적음
 
-### Code
+물론, RDB 저장(Redis Database)이나 AOF(Append Only File) 같은 기능을 이용해  
+디스크에 저장할 수도 있지만, 기본적으로는 **속도 중심의 임시 저장소**로 많이 쓰여.
 
-Inline code is available with the `<code>` element. Snippets of multiple lines of code are supported through Rouge. Longer lines will automatically scroll horizontally when needed. You may also use code fencing (triple backticks) for rendering code.
+---
 
-{% highlight js %}
-// Example can be run directly in your JavaScript console
+### 그럼에도 레디스가 인기 있는 이유
 
-// Create a function that takes two arguments and returns the sum of those arguments
-var adder = new Function("a", "b", "return a + b");
+웹이 발전하고, 네트워크를 통한 데이터 전송량이 **기하급수적으로 증가**하면서  
+단순히 “정확한 저장”뿐 아니라,  
+**“얼마나 빠르게 데이터를 줄 수 있느냐”**가 중요한 시대가 됐어.
 
-// Call the function
-adder(2, 6);
-// > 8
-{% endhighlight %}
+---
 
-You may also optionally show code snippets with line numbers. Add `linenos` to the Rouge tags.
+### 실전 예시: 쇼핑몰 메인 화면
 
-{% highlight js linenos %}
-// Example can be run directly in your JavaScript console
+예를 들어, 내가 쇼핑몰 웹사이트를 만들었다고 해보자.
 
-// Create a function that takes two arguments and returns the sum of those arguments
-var adder = new Function("a", "b", "return a + b");
+- 메인 화면에 상품 목록 등 100개의 데이터를 보여줘야 하고
+- 동시에 **100만 명이 접속**했다고 가정하자
 
-// Call the function
-adder(2, 6);
-// > 8
-{% endhighlight %}
+그러면 DB는 무려 **1억 건의 조회 요청**을 받아야 해.  
+(100만 명 × 100개의 데이터)
 
-Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.
+---
 
-### Lists
+그런데 DB는 단순히 데이터를 꺼내주는 것뿐 아니라
 
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+- 회원 가입 처리
+- 결제 내역 저장
+- 재고 수정 등... 중요한 작업도 동시에 처리해야 해.
 
-- Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-- Donec id elit non mi porta gravida at eget metus.
-- Nulla vitae elit libero, a pharetra augue.
+이런 상황에서 조회 요청이 몰려서 DB가 느려지면,  
+**결제 실패**, **예약 누락**, **재고 오류** 같은 문제가 생기고,  
+그게 곧 **비즈니스에 큰 타격**으로 이어질 수 있어.
 
-Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.
+---
 
-1. Vestibulum id ligula porta felis euismod semper.
-2. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-3. Maecenas sed diam eget risus varius blandit sit amet non magna.
+### 그래서 Redis가 필요해
 
-Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.
+이런 단순 조회 요청을 **미리 Redis에 캐시**해두면,
 
-<dl>
-  <dt>HyperText Markup Language (HTML)</dt>
-  <dd>The language used to describe and define the content of a Web page</dd>
+- 처음 1번만 DB에서 데이터를 읽고
+- 이후엔 Redis에서 빠르게 꺼내 쓸 수 있어
 
-  <dt>Cascading Style Sheets (CSS)</dt>
-  <dd>Used to describe the appearance of Web content</dd>
+이렇게 하면
 
-  <dt>JavaScript (JS)</dt>
-  <dd>The programming language used to build advanced Web sites and applications</dd>
-</dl>
+- DB는 중요한 쓰기 작업에 집중할 수 있고
+- Redis는 조회 요청을 빠르게 처리해 전체 시스템이 안정돼
 
-Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo.
+나는 그래서 Redis를  
+**읽기 요청을 분산하고 DB의 부담을 줄이기 위한 효율적인 캐시 저장소**라고 이해하고 있어.
 
-### Images
+---
 
-Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at.
+## ✅ 마무리 요약
 
-![placeholder](http://placehold.it/800x400 "Large example image")
-![placeholder](http://placehold.it/400x200 "Medium example image")
-![placeholder](http://placehold.it/200x200 "Small example image")
-
-Align to the center by adding `class="align-center"`:
-
-![placeholder](http://placehold.it/400x200 "Medium example image"){: .align-center}
-
-### Tables
-
-Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Upvotes</th>
-      <th>Downvotes</th>
-    </tr>
-  </thead>
-  <tfoot>
-    <tr>
-      <td>Totals</td>
-      <td>21</td>
-      <td>23</td>
-    </tr>
-  </tfoot>
-  <tbody>
-    <tr>
-      <td>Alice</td>
-      <td>10</td>
-      <td>11</td>
-    </tr>
-    <tr>
-      <td>Bob</td>
-      <td>4</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <td>Charlie</td>
-      <td>7</td>
-      <td>9</td>
-    </tr>
-  </tbody>
-</table>
-
-Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo.
-
------
-
-Want to see something else added? <a href="https://github.com/vszhub/not-pure-poole/issues/new">Open an issue.</a>
-
-[^fn-sample_footnote]: Handy! Now click the return link to go back.
+> Redis는 단순한 저장소가 아니라,  
+> **속도와 효율성, 그리고 안정성을 위한 보조 두뇌** 역할을 한다고 볼 수 있어.
